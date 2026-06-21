@@ -28,6 +28,28 @@ test('runGate returns failure verdict for false-done PR', async () => {
   assert.ok(v.findings.some((f) => f.rule === 'claim-not-in-diff'));
 });
 
+test('runGate returns neutral when repo config disables the gate', async () => {
+  const v = await runGate('o/r', '8', {
+    fetchPr: async () => FAIL_PR,
+    fetchConfig: async () => ({ enabled: false }),
+  });
+  assert.equal(v.conclusion, 'neutral');
+});
+
+test('runGate returns failure when repo config is empty', async () => {
+  const v = await runGate('o/r', '8', {
+    fetchPr: async () => FAIL_PR,
+    fetchConfig: async () => ({}),
+  });
+  assert.equal(v.conclusion, 'failure');
+  assert.ok(v.findings.some((f) => f.rule === 'claim-not-in-diff'));
+});
+
+test('runGate does not crash when only fetchPr is injected', async () => {
+  const v = await runGate('o/r', '8', { fetchPr: async () => FAIL_PR });
+  assert.equal(v.conclusion, 'failure');
+});
+
 test('runGate passes repo and prNumber to fetchPr', async () => {
   let got = null;
   await runGate('owner/name', '42', { fetchPr: async (r, n) => { got = [r, n]; return PASS_PR; } });

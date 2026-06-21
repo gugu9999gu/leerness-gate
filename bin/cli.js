@@ -18,11 +18,30 @@ function fetchPrViaGh(repo, num) {
   };
 }
 
-// 순수 오케스트레이션 (fetchPr 주입 가능 -> 테스트는 gh 없이 mock).
+function fetchRepoConfigViaGh(repo) {
+  try {
+    const repoInfo = JSON.parse(execFileSync('gh', ['api', 'repos/' + repo], { encoding: 'utf8' }));
+    const defaultBranch = repoInfo && repoInfo.default_branch;
+    if (!defaultBranch) return {};
+    const body = JSON.parse(execFileSync('gh', ['api', 'repos/' + repo + '/contents/.leerness-gate.json?ref=' + encodeURIComponent(defaultBranch)], { encoding: 'utf8' }));
+    if (!body || typeof body.content !== 'string') return {};
+    const decoded = Buffer.from(body.content.replace(/\s/g, ''), 'base64').toString('utf8');
+    const parsed = JSON.parse(decoded);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    return parsed;
+  } catch {
+    return {};
+  }
+}
+
+// 순수 오케스트레이션 (fetchPr/fetchConfig 주입 가능 -> 테스트는 gh 없이 mock).
 export async function runGate(repo, prNumber, deps = {}) {
+  const usingDefaultFetchPr = !deps.fetchPr;
   const fetchPr = deps.fetchPr || fetchPrViaGh;
+  const fetchConfig = deps.fetchConfig || (usingDefaultFetchPr ? fetchRepoConfigViaGh : async () => ({}));
   const pr = await fetchPr(repo, prNumber);
-  return evaluatePr(pr);
+  const config = await fetchConfig(repo);
+  return evaluatePr(pr, config);
 }
 
 // 콘솔 렌더 (verdict.summary 는 markdown — 그대로 출력).
