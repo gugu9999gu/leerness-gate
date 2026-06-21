@@ -1,0 +1,13 @@
+{
+  // leerness Gate - Cloudflare Worker (GitHub App webhook receiver).
+  // 시크릿은 여기에 두지 않습니다. 배포 전 다음을 실행:
+  //   wrangler secret put GITHUB_WEBHOOK_SECRET
+  //   wrangler secret put GITHUB_APP_ID
+  //   wrangler secret put GITHUB_APP_PRIVATE_KEY   (PEM 전체 붙여넣기)
+  "name": "leerness-gate",
+  "main": "src/index.js",
+  "compatibility_date": "2025-01-01",
+  "observability": {
+    "enabled": true
+  }
+}

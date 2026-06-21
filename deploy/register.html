@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register leerness Gate — GitHub App</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; max-width: 640px; margin: 6vh auto; padding: 0 20px; }
+  h1 { font-size: 1.5rem; }
+  .card { border: 1px solid #8884; border-radius: 12px; padding: 24px; }
+  label { display: block; font-weight: 600; margin: 16px 0 6px; }
+  input { width: 100%; padding: 10px 12px; border: 1px solid #8886; border-radius: 8px; font: inherit; box-sizing: border-box; }
+  button { margin-top: 20px; padding: 12px 20px; border: 0; border-radius: 8px; background: #2da44e; color: #fff; font: 600 16px system-ui; cursor: pointer; }
+  button:disabled { background: #8886; cursor: not-allowed; }
+  small { color: #888; }
+  ul { padding-left: 1.2em; }
+  code { background: #8882; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+  <h1>Register the leerness Gate GitHub App</h1>
+  <p>This pre-fills GitHub with the correct permissions and events. Deploy the Worker first to get its URL (see <code>DEPLOY.md</code>).</p>
+  <div class="card">
+    <form id="f" action="https://github.com/settings/apps/new" method="post">
+      <label for="url">Your deployed Worker URL (the webhook URL)</label>
+      <input id="url" name="_url" type="url" value="https://leerness-gate.gytlrgpfl96.workers.dev" placeholder="https://leerness-gate.your-subdomain.workers.dev" required>
+      <small>Org install? Use <code>https://github.com/organizations/&lt;org&gt;/settings/apps/new</code> as the form action.</small>
+      <input type="hidden" name="manifest" id="manifest">
+      <button type="submit">Create leerness Gate App</button>
+    </form>
+    <p style="margin-top:18px"><small>After creating: copy the <b>App ID</b>, generate a <b>private key</b>, set a <b>webhook secret</b>, then set the three Worker secrets (DEPLOY.md step 3).</small></p>
+    <p>It will request: <b>Checks</b> read &amp; write, <b>Pull requests</b> read, <b>Contents</b> read — subscribed to <b>Pull request</b> events.</p>
+  </div>
+<script>
+  // GitHub App manifest flow: POST a JSON manifest; GitHub auto-generates App ID / key / secret on creation.
+  document.getElementById('f').addEventListener('submit', function () {
+    var url = document.getElementById('url').value.trim().replace(/\/$/, '');
+    var manifest = {
+      name: 'leerness-gate',
+      url: 'https://leerness-gate-site.pages.dev',
+      hook_attributes: { url: url, active: true },
+      redirect_url: url + '/setup',
+      public: false,
+      default_permissions: { checks: 'write', pull_requests: 'read', contents: 'read' },
+      default_events: ['pull_request']
+    };
+    document.getElementById('manifest').value = JSON.stringify(manifest);
+  });
+</script>
+</body>
+</html>

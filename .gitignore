@@ -1,0 +1,21 @@
+node_modules/
+.wrangler/
+.env
+.env.local
+.env.production
+.env.*.local
+*.pem
+credentials.json
+.harness/skill-publish.local.json
+.harness/**/*.local.json
+.harness/archive/
+.harness/migration-report.md
+.harness/cache/
+.harness/credentials.local.json
+.harness/incidents/
+.harness/agent-sessions/
+.harness/runs/
+
+# never commit GitHub App private keys
+*.private-key.pem
+*.pem
