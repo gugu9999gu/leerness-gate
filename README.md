@@ -15,10 +15,10 @@ It is the hosted form of [leerness](https://www.npmjs.com/package/leerness)'s `v
 
 ## Try it now (no deploy)
 
-Preview the verdict on **any PR** with your existing `gh` CLI auth — no GitHub App, no Cloudflare account. From a clone of this repo:
+Preview the verdict on **any PR** with your existing `gh` CLI auth — no GitHub App, no Cloudflare account:
 
 ```bash
-node bin/cli.js <owner/repo> <pr-number>
+npx leerness-gate <owner/repo> <pr-number>
 ```
 
 It fetches the PR via `gh`, runs the **same** core the hosted gate uses, prints a report, and **exits non-zero on failure** (usable as a local pre-push check). Real output:

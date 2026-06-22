@@ -85,4 +85,4 @@ Try a failing case: open a PR whose description claims a file it does not change
 - **No check appears**: confirm the webhook URL matches the deployed Worker, and that step 3 secrets are set (`npx wrangler secret list`). Check `npx wrangler tail` for live logs.
 - **401 invalid signature**: the `GITHUB_WEBHOOK_SECRET` does not match the App's webhook secret.
 - **`atob` / `Invalid keyData` in `wrangler tail`**: the `GITHUB_APP_PRIVATE_KEY` secret is truncated or malformed — re-set it with the pipe method in step 3 (do not paste a multi-line key at the interactive prompt). The parser accepts both PKCS#1 (`BEGIN RSA PRIVATE KEY`, GitHub's default) and PKCS#8.
-- **Want to preview without deploying?** `node bin/cli.js <owner/repo> <pr>` (from a clone) runs the same verdict locally via your `gh` auth (see README).
+- **Want to preview without deploying?** `npx leerness-gate <owner/repo> <pr>` runs the same verdict locally via your `gh` auth (see README).
