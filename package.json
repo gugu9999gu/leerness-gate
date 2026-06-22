@@ -1,7 +1,6 @@
 {
   "name": "leerness-gate",
   "version": "0.0.1",
-  "private": true,
   "type": "module",
   "description": "Hosted leerness Gate - a GitHub App (Cloudflare Worker) that verifies AI completion claims on pull requests (evidence-gated done).",
   "license": "MIT",
@@ -24,6 +23,7 @@
     "bin",
     "README.md",
     "DEPLOY.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "bin": {
