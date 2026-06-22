@@ -137,7 +137,7 @@
       <a href="#try">Try it</a>
       <a href="#deploy">Deploy</a>
     </div>
-    <a class="ghbtn" href="https://github.com/gugu9999gu/leerness" target="_blank" rel="noopener">GitHub ↗</a>
+    <a class="ghbtn" href="https://github.com/gugu9999gu/leerness-gate" target="_blank" rel="noopener">GitHub ↗</a>
   </nav>
 
   <header>
@@ -180,7 +180,7 @@
   <section id="how">
     <div class="klabel">The mechanism</div>
     <h2 class="disp">A guardrail, not a guideline</h2>
-    <p class="sub">It runs independently of the agent — on Cloudflare's edge, with read-only repo access — so a cooperative-by-default agent can't skip it.</p>
+    <p class="sub">It runs outside the agent — on Cloudflare's edge, reading the PR diff and posting the Check itself — so a cooperative-by-default agent can't silently skip it.</p>
     <div class="steps">
       <div class="step"><div class="n">01</div><h3>PR opens</h3><p>GitHub sends a signed webhook to the Worker. The signature is verified before anything runs.</p><span class="arrow">→</span></div>
       <div class="step"><div class="n">02</div><h3>Claims meet diff</h3><p>It fetches the changed files and checks the description's claims against what actually changed.</p><span class="arrow">→</span></div>
@@ -218,7 +218,7 @@ $ <span class="g">npx</span> leerness-gate acme/checkout <span class="o">42</spa
   <section id="deploy">
     <div class="klabel">~10 minutes</div>
     <h2 class="disp">Host it as a required check</h2>
-    <p class="sub">Deploy the Worker, register the App from a one-click manifest, set three secrets. Zero runtime dependencies, least-privilege permissions (<span style="color:var(--txt)">contents: read</span>), no secrets in the repo.</p>
+    <p class="sub">Deploy the Worker, register the App from a one-click manifest, set three secrets. Zero runtime dependencies, least-privilege permissions (<span style="color:var(--txt)">checks: write, pull requests: read, contents: read</span>), no secrets in the repo.</p>
     <div class="code" style="max-width:640px">
       <div class="h"><i></i><i></i><i></i><span style="margin-left:6px">deploy</span></div>
 <pre>$ <span class="g">npx</span> wrangler login
@@ -230,17 +230,17 @@ $ <span class="g">npx</span> wrangler secret put GITHUB_APP_PRIVATE_KEY
 $ <span class="g">npm</span> run deploy            <span class="ok"># live ✓</span></pre>
     </div>
     <div class="cta" style="margin-top:26px">
-      <a class="btn p" href="https://github.com/gugu9999gu/leerness" target="_blank" rel="noopener">Read DEPLOY.md ↗</a>
+      <a class="btn p" href="https://github.com/gugu9999gu/leerness-gate/blob/main/DEPLOY.md" target="_blank" rel="noopener">Read DEPLOY.md ↗</a>
     </div>
   </section>
 
   <footer>
     <div>
       <div class="brand" style="font-size:15px"><span class="dot"></span>leerness/gate</div>
-      <div class="badges"><span>0</span> runtime deps · <span>42</span> tests · MIT · built with <a href="https://www.npmjs.com/package/leerness">leerness</a></div>
+      <div class="badges"><span>0</span> runtime deps · <span>80</span> tests · MIT · v0.0.1 (early) · built with <a href="https://www.npmjs.com/package/leerness">leerness</a></div>
     </div>
     <div style="text-align:right">
-      <a href="https://github.com/gugu9999gu/leerness">github</a> · <a href="https://www.npmjs.com/package/leerness">npm</a><br>
+      <a href="https://github.com/gugu9999gu/leerness-gate">github</a> · <a href="https://www.npmjs.com/package/leerness-gate">npm</a><br>
       <span style="color:var(--dim)">"done" must match reality.</span>
     </div>
   </footer>
