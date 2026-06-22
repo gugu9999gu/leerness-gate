@@ -2,6 +2,8 @@
 
 A GitHub App (Cloudflare Worker) that verifies completion claims on pull requests — **"done" must match reality** — as a hosted check run. Built for the era of AI-authored PRs.
 
+> Recent changes are in the [changelog](CHANGELOG.md).
+
 When a PR is opened or updated, leerness Gate posts a `leerness gate` check that **fails** when the description's claims don't match the diff:
 
 - **no-evidence** — no verification evidence (no test output, no Evidence/Verification section, no "tested/verified" note).
