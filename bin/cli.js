@@ -20,10 +20,12 @@ function fetchPrViaGh(repo, num) {
 
 function fetchRepoConfigViaGh(repo) {
   try {
-    const repoInfo = JSON.parse(execFileSync('gh', ['api', 'repos/' + repo], { encoding: 'utf8' }));
+    // stderr 무시: config 파일 부재(흔한 케이스)는 gh 가 404 를 stderr 로 내는데, 여기선 정상(설정 없음)이라 노이즈만 됨. fail-soft 로 {} 반환.
+    const ghOpts = { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] };
+    const repoInfo = JSON.parse(execFileSync('gh', ['api', 'repos/' + repo], ghOpts));
     const defaultBranch = repoInfo && repoInfo.default_branch;
     if (!defaultBranch) return {};
-    const body = JSON.parse(execFileSync('gh', ['api', 'repos/' + repo + '/contents/.leerness-gate.json?ref=' + encodeURIComponent(defaultBranch)], { encoding: 'utf8' }));
+    const body = JSON.parse(execFileSync('gh', ['api', 'repos/' + repo + '/contents/.leerness-gate.json?ref=' + encodeURIComponent(defaultBranch)], ghOpts));
     if (!body || typeof body.content !== 'string') return {};
     const decoded = Buffer.from(body.content.replace(/\s/g, ''), 'base64').toString('utf8');
     const parsed = JSON.parse(decoded);
