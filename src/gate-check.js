@@ -170,7 +170,9 @@ export function evaluatePr(pr, config = {}) {
   // R2: 본문이 주장한 파일이 실제 diff 에 있는가 -> 주장-변경 불일치(거짓완료 신호).
   //   제목은 claim 추출 제외: 제목은 맥락("from legacy.js" 등)을 자주 언급해 FP 유발 (적대적 FP-hunt 확인). 제목-only 우회 FN 은 용인.
   const claimed = extractClaimedFiles(body);
-  const claimedNotChanged = claimed.filter((f) => !_isIgnoredPath(f, ignorePaths) && !_claimInChanged(f, changedSet));
+  // 테스트-경로 파일은 본문에서 대개 "실행 증거"(예: "utils.test.js: 8 passed")로 언급됨 → 변경-주장으로 오인 차단(false-fail).
+  //   실제로 변경한 테스트 파일은 어차피 diff(changedSet)에 있어 영향 0 — 오직 '증거로만 언급된 미변경 테스트 파일' 만 R2 제외.
+  const claimedNotChanged = claimed.filter((f) => !_isIgnoredPath(f, ignorePaths) && !_TEST_PATH.test(f) && !_claimInChanged(f, changedSet));
   if (claimed.length && claimedNotChanged.length) {
     findings.push(_finding('claim-not-in-diff', 'fail', 'Claimed file(s) absent from the PR diff: ' + claimedNotChanged.slice(0, 10).join(', '), { files: claimedNotChanged.slice(0, 10) }));
   }

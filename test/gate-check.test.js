@@ -23,6 +23,28 @@ test('false done: claimed file NOT in diff -> failure (claim-not-in-diff)', () =
   assert.ok(r.findings.find((f) => f.rule === 'claim-not-in-diff').files.includes('payment.js'));
 });
 
+// 18th hunt (false-fail fix): test files referenced as evidence (not changed) must not trip claim-not-in-diff.
+test('evidence-only test files (not in diff) do not trip claim-not-in-diff -> success', () => {
+  const r = evaluatePr({
+    title: 'Refactor utils module',
+    body: 'Refactored src/utils.js.\n\n## Verification\nRan full test suite:\n- utils.test.js: 8 tests passed\n- auth.test.js: 12 tests passed\nTotal: 20 tests passing',
+    files: [{ filename: 'src/utils.js', status: 'modified', patch: '+const cached = {};' }],
+  });
+  assert.equal(r.conclusion, 'success', 'test files cited as evidence must not be treated as claimed-not-in-diff');
+  assert.equal(r.findings.length, 0);
+});
+
+// no-FN-regression: a non-test claimed file absent from the diff is still flagged.
+test('non-test claimed file absent from diff still fails (no FN from the test-path exclusion)', () => {
+  const r = evaluatePr({
+    title: 'Add payment',
+    body: 'Implemented src/payment.js. Tests: 5 passed.',
+    files: [{ filename: 'README.md', status: 'modified' }],
+  });
+  assert.equal(r.conclusion, 'failure');
+  assert.ok(r.findings.some((f) => f.rule === 'claim-not-in-diff'));
+});
+
 test('no verification evidence -> failure (no-evidence)', () => {
   const r = evaluatePr({
     title: 'add stuff',

@@ -15,5 +15,6 @@ All notable changes to leerness Gate. This project is early; versions are not ye
 ### Fixed
 - GitHub App **PKCS#1** private keys are wrapped to PKCS#8 for Web Crypto; PEM parsing tolerates padding and literal `\n` (mangled secrets).
 - Verdict core hardened: input length caps (regex DoS), directory-aware claim matching, leading-digit filenames, evidence sections require real content, `ignorePaths` matches on path boundaries.
+- Verdict core false-fail fix: test files cited only as **evidence** in the PR body (e.g. "utils.test.js: 8 passed") no longer count as claimed-changed files, so a legitimate refactor PR whose verification section lists existing tests is not wrongly blocked. Non-test claimed files absent from the diff are still flagged (no new bypass). (18th bug hunt; reproduced before/after via `evaluatePr`.)
 - Portable test discovery (works on Node 18+).
 - CLI silences the expected `404` when a repo has no config file.
