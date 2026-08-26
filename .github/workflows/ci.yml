@@ -28,4 +28,4 @@ jobs:
       # npm publish 지연과 무관하게 공개 GitHub 릴리스 소스를 검증한다.
       - run: npm run test:installed
         env:
-          LEERNESS_PACKAGE_SOURCE: github:gugu9999gu/leerness#v1.36.162
+          LEERNESS_PACKAGE_SOURCE: github:gugu9999gu/leerness#v1.36.163
