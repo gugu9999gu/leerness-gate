@@ -89,6 +89,11 @@ function spawnHandoff(cli, sessionId) {
         LEERNESS_NO_PROMPT: '1',
         LEERNESS_NO_AUTOCHCP: '1',
         LEERNESS_SESSION_ID: sessionId,
+        // This probe deliberately exercises session presence. GitHub Actions
+        // normally suppresses presence records, so isolate the child from the
+        // runner markers without changing the parent test process.
+        CI: 'false',
+        GITHUB_ACTIONS: 'false',
       },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
@@ -189,15 +194,19 @@ async function main() {
   const sessionIds = ['gate-codex-01', 'gate-claude-01', 'gate-cursor-01'];
   const handoffs = await Promise.all(sessionIds.map((id) => spawnHandoff(leernessCli, id)));
   const sessionDir = path.join(project, '.leerness', 'cache', 'sessions');
-  const isolated = sessionIds.every((id) => {
+  const sessionRecords = Object.fromEntries(sessionIds.map((id) => {
     const file = path.join(sessionDir, `${id}.json`);
-    if (!fs.existsSync(file)) return false;
-    const record = JSON.parse(fs.readFileSync(file, 'utf8'));
-    return record.sessionKey === id && record.handoffCount === 1;
+    if (!fs.existsSync(file)) return [id, null];
+    try { return [id, JSON.parse(fs.readFileSync(file, 'utf8'))]; }
+    catch (error) { return [id, { readError: error instanceof Error ? error.message : String(error) }]; }
+  }));
+  const isolated = sessionIds.every((id) => {
+    const record = sessionRecords[id];
+    return record && record.sessionKey === id && record.handoffCount === 1;
   });
   check('co-installed Leerness keeps parallel agent handoffs isolated',
     handoffs.every((result) => result.status === 0) && isolated,
-    JSON.stringify(handoffs));
+    JSON.stringify({ handoffs, sessionRecords }));
 
   const audit = runNpm(['audit', '--omit=dev', '--json'], consumer);
   let auditJson = null;

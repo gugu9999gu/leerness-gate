@@ -2,6 +2,12 @@
 
 All notable changes to leerness Gate.
 
+## 0.0.3 - 2026-08-26
+
+### Fixed
+- The installed-package concurrency probe now isolates its handoff children from GitHub Actions' intentional session-presence suppression, so CI measures per-session records instead of inheriting `CI`/`GITHUB_ACTIONS` runner markers.
+- Failed handoff-isolation probes include the observed session records, making missing or conflicting session files diagnosable without reproducing the runner locally.
+
 ## 0.0.2 - 2026-08-26
 
 ### Added
