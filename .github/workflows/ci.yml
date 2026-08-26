@@ -20,6 +20,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      # 검증 코어 + 테스트는 의존성 0 (node:test / node:crypto) -> install 불필요.
+          node-version: '22'
+          cache: npm
+      - run: npm ci
       - run: npm test
+      # Standalone checkout에서는 npm latest leerness를 pack하고, monorepo/로컬에서는 sibling source를 pack한다.
+      - run: npm run test:installed

@@ -6,7 +6,7 @@
   //   wrangler secret put GITHUB_APP_PRIVATE_KEY   (PEM 전체 붙여넣기)
   "name": "leerness-gate",
   "main": "src/index.js",
-  "compatibility_date": "2025-01-01",
+  "compatibility_date": "2026-08-25",
   "observability": {
     "enabled": true
   }

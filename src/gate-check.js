@@ -4,8 +4,10 @@
 //   leerness npm 패키지는 fs/child_process 의존이라 Worker 에서 직접 import 불가 -> 순수 코어만 이식.
 
 const FILE_EXTS = 'webmanifest|dockerfile|properties|tscn|tres|godot|json5|java|jsx|tsx|yaml|html|scss|sass|less|gltf|conf|json|toml|lock|mdx|xml|css|svg|yml|cfg|ini|env|php|mjs|cjs|md|js|ts|gd|cs|py|rb|go|rs|kt|sh|h';
-// 파일 경로 추출: 선택적 디렉토리 prefix + 확장자 화이트리스트 (verify-claim FILE_RE 포팅).
-const FILE_RE = new RegExp('(?:[A-Za-z0-9][A-Za-z0-9_-]*\\/)?[A-Za-z0-9][\\w./-]*\\.(?:' + FILE_EXTS + ')\\b', 'g');
+// 파일 경로 추출: 점으로 시작하는 leerness 파일/디렉터리를 포함한 상대 경로 + 확장자 화이트리스트.
+// 선행 경계 문자를 캡처 밖에 둬 dot-directory 경로의 선행 점을 잘라내지 않는다.
+// lookbehind를 쓰지 않아 Worker/Node 18 양쪽에서 동일하게 동작한다.
+const FILE_RE = new RegExp('(?:^|[^A-Za-z0-9_./-])((?:\\./)?(?:\\.?[A-Za-z0-9][\\w.-]*/)*\\.?[A-Za-z0-9][\\w.-]*\\.(?:' + FILE_EXTS + ')\\b)', 'g');
 // 주: 확장자 없는 파일(Dockerfile/Makefile)은 의도적으로 추출 안 함 — 그 단어들이 산문에 흔히 등장해 FP 유발 (적대적 FP-hunt 확인).
 
 // 테스트/검증 실행 증거 신호 (verify-claim evidence 휴리스틱 포팅): X/Y 통과, jest/mocha, 러너 이름, 체크표시.
@@ -72,7 +74,9 @@ function _isIgnoredPath(path, ignorePaths) {
 }
 
 export function extractClaimedFiles(text) {
-  return Array.from(new Set(String(text || '').match(FILE_RE) || []));
+  const files = [];
+  for (const match of String(text || '').matchAll(FILE_RE)) files.push(match[1]);
+  return Array.from(new Set(files));
 }
 
 // --- Gate 1: PR diff(patch) 기반 정밀 검증 (verify-claim 의 스텁/카운트 휴리스틱 포팅) ---

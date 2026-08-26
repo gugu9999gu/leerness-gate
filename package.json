@@ -1,6 +1,6 @@
 {
   "name": "leerness-gate",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "description": "Hosted leerness Gate - a GitHub App (Cloudflare Worker) that verifies AI completion claims on pull requests (evidence-gated done).",
   "license": "MIT",
@@ -18,9 +18,20 @@
   "engines": {
     "node": ">=18"
   },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=22",
+      "onFail": "error"
+    }
+  },
   "files": [
     "src",
     "bin",
+    "scripts",
+    "test",
+    "site",
+    "wrangler.jsonc",
     "README.md",
     "DEPLOY.md",
     "CHANGELOG.md",
@@ -31,10 +42,21 @@
   },
   "scripts": {
     "test": "node --test",
+    "test:installed": "node scripts/installed-cleanroom-probe.js",
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "deploy:dry-run": "wrangler deploy --dry-run",
+    "check:startup": "wrangler check startup"
   },
   "devDependencies": {
-    "wrangler": "^3.0.0"
+    "wrangler": "^4.125.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gugu9999gu/leerness-gate.git"
+  },
+  "homepage": "https://github.com/gugu9999gu/leerness-gate#readme",
+  "bugs": {
+    "url": "https://github.com/gugu9999gu/leerness-gate/issues"
   }
 }

@@ -1,13 +1,14 @@
 # Deploy leerness Gate
 
-Turning the (already-tested) Worker into a live GitHub App. ~10 minutes. You need a **Cloudflare account** (free tier is fine) and a **GitHub account**.
+Turning the (already-tested) Worker into a live GitHub App. ~10 minutes. You need **Node.js 22+**, a **Cloudflare account** (free tier is fine), and a **GitHub account**.
 
-> The verification core + Worker are already unit-tested (`npm test`, 77 tests). This guide only wires up *your* credentials — none are stored in the repo.
+> The verification core + Worker are already unit-tested (`npm test`, 92 tests), and `npm run test:installed` validates both packed products together in a disposable consumer. This guide only wires up *your* credentials — none are stored in the repo.
 
 ## 0. Prerequisites
 
 ```bash
 npm install                 # installs wrangler (dev dependency)
+npm run deploy:dry-run      # validates config and bundling without publishing
 npx wrangler login          # authenticate Cloudflare (opens browser)
 ```
 

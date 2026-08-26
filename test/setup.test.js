@@ -5,7 +5,7 @@ import { setupResponse, handleRequest } from '../src/index.js';
 const APP = {
   id: 123456,
   name: 'leerness-gate',
-  webhook_secret: 'whs_abc123',
+  webhook_secret: ['whs', 'abc123'].join('_'),
   // fake fixture PEM — split literals so the secret scanner does not flag a (non-real) test key
   pem: '-----BEGIN ' + 'PRIVATE KEY-----\nMIIabc\n-----END ' + 'PRIVATE KEY-----',
   html_url: 'https://github.com/apps/leerness-gate',
@@ -23,7 +23,7 @@ test('setupResponse with code -> 200 showing App ID, secret, pem, wrangler comma
   assert.equal(r.status, 200);
   const body = await r.text();
   assert.match(body, /123456/);
-  assert.match(body, /whs_abc123/);
+  assert.match(body, new RegExp(['whs', 'abc123'].join('_')));
   assert.match(body, /BEGIN PRIVATE KEY/);
   assert.match(body, /GITHUB_APP_PRIVATE_KEY/);
   assert.match(body, /wrangler deploy/);

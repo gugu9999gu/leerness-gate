@@ -21,7 +21,7 @@ Preview the verdict on **any PR** with your existing `gh` CLI auth — no GitHub
 npx leerness-gate <owner/repo> <pr-number>
 ```
 
-It fetches the PR via `gh`, runs the **same** core the hosted gate uses, prints a report, and **exits non-zero on failure** (usable as a local pre-push check). Real output:
+If `gh` is unavailable (for example in a clean CI image), set `GITHUB_TOKEN` or `GH_TOKEN`; the CLI uses GitHub REST directly. It runs the **same** core the hosted gate uses, prints a report, and **exits non-zero on failure** (usable as a local pre-push check).
 
 ```
 # leerness gate preview — owner/repo #42
@@ -90,10 +90,11 @@ The turnkey path is in **[DEPLOY.md](DEPLOY.md)** (~10 min):
 | `src/github.js` | GitHub App client: JWT (RS256, PKCS#1/#8) → installation token → PR files + check run + repo config |
 | `src/verify-signature.js` | webhook HMAC-SHA256 verification (Web Crypto, timing-safe) |
 | `src/index.js` | Worker entry: webhook → verify → route → check run; `/setup` registration callback |
-| `bin/cli.js` | local CLI preview via `gh` (no deploy) |
+| `bin/cli.js` | local CLI preview via authenticated `gh` or token-backed GitHub REST (no deploy) |
 
 ```bash
-npm test    # 77 unit tests, zero dependencies, no credentials needed
+npm test                  # 92 unit tests, zero runtime dependencies, no credentials needed
+npm run test:installed    # pack + install both leerness products in a disposable consumer
 ```
 
 ## Built with leerness (dogfood)
@@ -113,7 +114,7 @@ MIT License.
 
 Leerness 는 **실행기/코딩 에이전트가 아니라**, 어떤 AI 코딩 에이전트(Claude Code · Codex · Cursor · Goose 등) 위에도 얹는 **범용 운영 레이어**입니다. 5개 공통 계층을 제공합니다:
 
-- **기억(Memory)** — 프로젝트 상태/결정/진행을 `.harness/` 에 영속화
+- **기억(Memory)** — 프로젝트 상태/결정/진행을 `.leerness/` 에 영속화
 - **정책(Policy)** — 8단계 권한 등급 + enforce (read-only→publish), MCP 호출 게이트
 - **인수인계(Handoff)** — 에이전트 간 컨텍스트 표준 전달 + `get_project_context` 1콜 온보딩
 - **검증(Verification)** — 근거 기반 완료 검증으로 허위 완료 차단
@@ -214,11 +215,11 @@ leerness release pack --close --auto-main-push
 
 ### Planning Files
 
-- `.harness/plan.md`: 전체 목표, milestone, 제외/드랍 범위
-- `.harness/progress-tracker.md`: 요청 단위 상태와 증거
-- `.harness/current-state.md`: 지금 이어서 할 작업
-- `.harness/session-handoff.md`: 다음 세션 인수인계 (자동 작성)
-- `.harness/lessons.md` / `decisions.md` / `rules.md`: 영구 메모리 (5 surface)
+- `.leerness/plan.md`: 전체 목표, milestone, 제외/드랍 범위
+- `.leerness/progress-tracker.md`: 요청 단위 상태와 증거
+- `.leerness/current-state.md`: 지금 이어서 할 작업
+- `.leerness/session-handoff.md`: 다음 세션 인수인계 (자동 작성)
+- `.leerness/lessons.md` / `decisions.md` / `rules.md`: 영구 메모리 (5 surface)
 
 Last synced by Leerness v1.34.1: 2026-06-20
 <!-- leerness:project-readme:end -->

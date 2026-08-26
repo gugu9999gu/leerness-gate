@@ -93,6 +93,41 @@ test('extractClaimedFiles dedups and matches whitelisted extensions only', () =>
   assert.deepEqual(got.sort(), ['a.js', 'b.ts', 'dir/c.py'].sort());
 });
 
+test('dot-prefixed leerness paths keep their leading dot and match the PR diff', () => {
+  const body = 'Updated .leerness/current-state.md, .harness/plan.md, and .leerness-gate.json. npm test passed.';
+  assert.deepEqual(extractClaimedFiles(body), [
+    '.leerness/current-state.md',
+    '.harness/plan.md',
+    '.leerness-gate.json',
+  ]);
+  const verdict = evaluatePr({
+    title: 'Update agent state',
+    body,
+    files: [
+      { filename: '.leerness/current-state.md', status: 'modified' },
+      { filename: '.harness/plan.md', status: 'modified' },
+      { filename: '.leerness-gate.json', status: 'modified' },
+    ],
+  });
+  assert.equal(verdict.conclusion, 'success');
+  assert.ok(!verdict.findings.some((finding) => finding.rule === 'claim-not-in-diff'));
+});
+
+test('explicit dot-relative paths are preserved and matched after normalization', () => {
+  const body = 'Updated ./src/main.js and ./.leerness/current-state.md. npm test passed.';
+  assert.deepEqual(extractClaimedFiles(body), ['./src/main.js', './.leerness/current-state.md']);
+  const verdict = evaluatePr({
+    title: 'Update relative files',
+    body,
+    files: [
+      { filename: 'src/main.js', status: 'modified', patch: '@@ -1 +1 @@\n-old\n+new' },
+      { filename: '.leerness/current-state.md', status: 'modified', patch: '@@' },
+    ],
+  });
+  assert.equal(verdict.conclusion, 'success');
+  assert.ok(!verdict.findings.some((finding) => finding.rule === 'claim-not-in-diff'));
+});
+
 test('summary is markdown and mentions leerness', () => {
   const r = evaluatePr({ title: 't', body: 'npm test', files: [{ filename: 'a.js' }] });
   assert.match(r.summary, /leerness/);

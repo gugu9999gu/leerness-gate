@@ -6,6 +6,19 @@ node_modules/
 .env.*.local
 *.pem
 credentials.json
+.leerness/skill-publish.local.json
+.leerness/**/*.local.json
+.leerness/archive/
+.leerness/migration-report.md
+.leerness/cache/
+.leerness-backup/
+.leerness/credentials.local.json
+.leerness/incidents/
+.leerness/cache/agent-sessions/
+.leerness/cache/agent-runs/
+
+# Keep pre-migration private state protected until leerness atomically moves it
+# to the ignored .leerness-backup/ recovery directory.
 .harness/skill-publish.local.json
 .harness/**/*.local.json
 .harness/archive/
