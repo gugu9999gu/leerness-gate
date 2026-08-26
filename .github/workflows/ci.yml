@@ -24,5 +24,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      # Standalone checkout에서는 npm latest leerness를 pack하고, monorepo/로컬에서는 sibling source를 pack한다.
+      # Gate 0.0.2의 canonical .leerness 계약은 제품 1.36.162부터 제공된다.
+      # npm publish 지연과 무관하게 공개 GitHub 릴리스 소스를 검증한다.
       - run: npm run test:installed
+        env:
+          LEERNESS_PACKAGE_SOURCE: github:gugu9999gu/leerness#v1.36.162
